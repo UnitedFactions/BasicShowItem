@@ -14,8 +14,6 @@ public class ItemTagResolver {
 
     public static TagResolver get(@NonNull Player player) {
         return TagResolver.resolver(
-            resolver(player, "item", EquipmentSlot.HAND),
-            resolver(player, "i", EquipmentSlot.HAND),
             resolver(player, "hand", EquipmentSlot.HAND),
             resolver(player, "offhand", EquipmentSlot.OFF_HAND),
             resolver(player, "head", EquipmentSlot.HEAD),
@@ -27,7 +25,8 @@ public class ItemTagResolver {
 
     public static String replaceVariables(@NonNull String string) {
         return string
-            .replace("[item]", "<item>")
+            .replace("[item]", "<hand>")
+            .replace("[i]", "<hand>")
             .replace("[hand]", "<hand>")
             .replace("[offhand]", "<offhand>")
             .replace("[head]", "<head>")
