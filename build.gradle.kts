@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:3.0.2")
 }
 
@@ -26,7 +26,7 @@ bukkit {
     name = rootProject.name
     version = project.version.toString()
     main = "uk.firedev.basicshowitem.BasicShowItem"
-    apiVersion = "1.20"
+    apiVersion = "1.21"
     author = "FireML"
     description = project.description.toString()
 
@@ -34,13 +34,6 @@ bukkit {
         register("basicshowitem.use") {
             description = "Allows the player to show their held item in chat"
             default = BukkitPluginDescription.Permission.Default.TRUE
-        }
-    }
-
-    commands {
-        register("basicshowitem") {
-            description = "Show your held item in chat"
-            aliases = listOf("showitem")
         }
     }
 }
