@@ -15,10 +15,11 @@ public final class BasicShowItem extends JavaPlugin {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
+        ShowItemService showItemService = new ShowItemService(this, 20);
+        Bukkit.getPluginManager().registerEvents(new ChatListener(this, showItemService), this);
         // Register plugin command
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-            event.registrar().register(PluginCommand.get(), List.of("showitem"));
+            event.registrar().register(PluginCommand.get(showItemService), List.of("showitem"));
         });
     }
 

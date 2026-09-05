@@ -10,7 +10,9 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.jspecify.annotations.NonNull;
+import uk.firedev.basicshowitem.ShowItemService;
 
 @SuppressWarnings("UnstableApiUsage")
 public class PluginCommand {
@@ -19,27 +21,31 @@ public class PluginCommand {
         new LiteralMessage("Only players can use this command.")
     );
 
-    public static @NonNull LiteralCommandNode<CommandSourceStack> get() {
+    public static @NonNull LiteralCommandNode<CommandSourceStack> get(@NonNull ShowItemService showItemService) {
         return Commands.literal("basicshowitem")
             .requires(stack -> stack.getSender().hasPermission("basicshowitem.use"))
             .executes(ctx -> {
                 Player player = requirePlayer(ctx);
-                player.chat("[item]");
+                showItemService.show(player, EquipmentSlot.HAND);
                 return 1;
             })
-            .then(choice("hand"))
-            .then(choice("offhand"))
-            .then(choice("head"))
-            .then(choice("chest"))
-            .then(choice("legs"))
-            .then(choice("feet"))
+            .then(choice("hand", EquipmentSlot.HAND, showItemService))
+            .then(choice("offhand", EquipmentSlot.OFF_HAND, showItemService))
+            .then(choice("head", EquipmentSlot.HEAD, showItemService))
+            .then(choice("chest", EquipmentSlot.CHEST, showItemService))
+            .then(choice("legs", EquipmentSlot.LEGS, showItemService))
+            .then(choice("feet", EquipmentSlot.FEET, showItemService))
             .build();
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> choice(@NonNull String name) {
+    private static LiteralArgumentBuilder<CommandSourceStack> choice(
+        @NonNull String name,
+        @NonNull EquipmentSlot slot,
+        @NonNull ShowItemService showItemService
+    ) {
         return Commands.literal(name).executes(ctx -> {
             Player player = requirePlayer(ctx);
-            player.chat("[" + name + "]");
+            showItemService.show(player, slot);
             return 1;
         });
     }
