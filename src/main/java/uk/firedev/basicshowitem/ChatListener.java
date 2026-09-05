@@ -1,31 +1,36 @@
 package uk.firedev.basicshowitem;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import uk.firedev.basicshowitem.tag.ItemTagResolver;
 
 public class ChatListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncChatEvent event) {
+    private final BasicShowItem plugin;
+    private final ShowItemService showItemService;
+
+    public ChatListener(BasicShowItem plugin, ShowItemService showItemService) {
+        this.plugin = plugin;
+        this.showItemService = showItemService;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPermission("basicshowitem.use")) {
             return;
         }
-        MiniMessage mm = MiniMessage.miniMessage();
-        String parsedMessage = ItemTagResolver.replaceVariables(
-            mm.serialize(event.message())
-        );
-        Component message = mm.deserialize(parsedMessage, ItemTagResolver.get(player));
-        event.message(message);
+        EquipmentSlot slot = ItemTagResolver.slotForExactToken(event.getMessage());
+        if (slot == null) {
+            return;
+        }
+        event.setCancelled(true);
+        Bukkit.getScheduler().runTask(plugin, () -> showItemService.show(player, slot));
     }
 
 }

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ItemTagResolver {
 
@@ -35,6 +36,18 @@ public class ItemTagResolver {
             .replace("[feet]", "<feet>");
     }
 
+    public static @Nullable EquipmentSlot slotForExactToken(@NonNull String message) {
+        return switch (message.trim().toLowerCase()) {
+            case "[i]", "[item]", "[hand]" -> EquipmentSlot.HAND;
+            case "[offhand]" -> EquipmentSlot.OFF_HAND;
+            case "[head]" -> EquipmentSlot.HEAD;
+            case "[chest]" -> EquipmentSlot.CHEST;
+            case "[legs]" -> EquipmentSlot.LEGS;
+            case "[feet]" -> EquipmentSlot.FEET;
+            default -> null;
+        };
+    }
+
     private static TagResolver resolver(@NonNull final Player player, @NonNull final String name, @NonNull final EquipmentSlot slot) {
         return TagResolver.resolver(name, ((argumentQueue, context) ->
             Tag.selfClosingInserting(buildHover(player.getInventory().getItem(slot)))
@@ -46,7 +59,7 @@ public class ItemTagResolver {
      * <p>
      * If a legacy chat plugin is present, the hover data will be lost, but the item name will be shown.
      */
-    private static Component buildHover(@NotNull ItemStack item) {
+    public static Component buildHover(@NotNull ItemStack item) {
         if (item.isEmpty()) {
             return Component.text("[Air]");
         }
